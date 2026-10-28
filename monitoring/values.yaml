@@ -1,0 +1,59 @@
+# Monitoring Stack - GitOps Lab
+# Hostinger VPS / K3s
+
+grafana:
+  enabled: true
+  service:
+    type: ClusterIP
+  persistence:
+    enabled: false
+
+prometheus:
+  prometheusSpec:
+    retention: 2d
+
+    resources:
+      requests:
+        cpu: 200m
+        memory: 512Mi
+      limits:
+        memory: 2Gi
+
+    # Preparação para ServiceMonitors
+    # de aplicações em outros namespaces
+    serviceMonitorSelectorNilUsesHelmValues: false
+    serviceMonitorNamespaceSelector: {}
+
+    ruleSelectorNilUsesHelmValues: false
+    ruleNamespaceSelector: {}
+
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 10Gi
+
+alertmanager:
+  enabled: true
+
+nodeExporter:
+  enabled: true
+
+kubeStateMetrics:
+  enabled: true
+
+# Endpoints do control plane no K3s
+kubeEtcd:
+  enabled: false
+
+kubeControllerManager:
+  enabled: false
+
+kubeScheduler:
+  enabled: false
+
+kubeProxy:
+  enabled: false
